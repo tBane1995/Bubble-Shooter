@@ -98,7 +98,7 @@ public class Bubble {
         return new Vector2(_position);
     }
 
-    public Vector2 getPosition(int coordX, int coordY){
+    public static Vector2 getPosition(int coordX, int coordY){
         Vector2 position = calcPositionFromCoords(coordX, coordY);
         return position;
     }

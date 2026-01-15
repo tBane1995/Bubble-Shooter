@@ -90,6 +90,66 @@ public class Game extends Layout {
         return b;
     }
 
+    public int countBubbleGroup(Bubble start) {
+
+        ArrayList<Bubble> visited = new ArrayList<>();
+        ArrayList<Bubble> toCheck = new ArrayList<>();
+
+        toCheck.add(start);
+        visited.add(start);
+
+        int count = 0;
+
+        while (!toCheck.isEmpty()) {
+
+            Bubble b = toCheck.remove(0);
+            count++;
+
+            for (Direction dir : Direction.values()) {
+                Bubble n = getNeighbour(b, dir);
+
+                if (n == null) continue;
+                if (n._color != start._color) continue;
+                if (visited.contains(n)) continue;
+
+                visited.add(n);
+                toCheck.add(n);
+            }
+        }
+
+        return count;
+    }
+
+    public void removeBubbleGroup(Bubble start) {
+
+        ArrayList<Bubble> visited = new ArrayList<>();
+        ArrayList<Bubble> toCheck = new ArrayList<>();
+
+        toCheck.add(start);
+        visited.add(start);
+
+        while (!toCheck.isEmpty()) {
+
+            Bubble b = toCheck.remove(0);
+
+            for (Direction dir : Direction.values()) {
+                Bubble n = getNeighbour(b, dir);
+
+                if (n == null) continue;
+                if (n._color != start._color) continue;
+                if (visited.contains(n)) continue;
+
+                visited.add(n);
+                toCheck.add(n);
+            }
+        }
+
+        for(Bubble bubble : visited){
+            _bubbles.remove(bubble);
+        }
+
+    }
+
     private void shootedBubblesUpdate() {
         for (int i = _shootedBubbles.size() - 1; i >= 0; i--) {
             ShootedBubble bubble = _shootedBubbles.get(i);
@@ -151,22 +211,11 @@ public class Game extends Layout {
                 _animatedPositioningBubbles.remove(i);
 
                 // TO-DO - counting bubbles
-                int countSameBubbles = 0;
-                for(Direction direction : Direction.values()){
-                    Bubble ngbr = getNeighbour(b, direction);
-                    if(ngbr != null && b._color == ngbr._color ){
-                        countSameBubbles += 1;
-                    }
-                }
+                int countSameBubbles = countBubbleGroup(bubble._bubble);
 
                 // TO-DO - remove bubbles
-                if(countSameBubbles > 1){
-                    for(Direction direction : Direction.values()) {
-                        Bubble ngbr = getNeighbour(b, direction);
-                        if(ngbr != null && b._color == ngbr._color )
-                            _bubbles.remove(ngbr);
-                    }
-                    _bubbles.remove(b);
+                if(countSameBubbles > 2){
+                    removeBubbleGroup(bubble._bubble);
                 }
 
                 //
