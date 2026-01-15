@@ -13,6 +13,9 @@ import com.tbane.bubble_shooter.Views.Layout;
 import com.tbane.bubble_shooter.Views.LayoutsManager;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Queue;
 
 public class Game extends Layout {
 
@@ -150,6 +153,34 @@ public class Game extends Layout {
 
     }
 
+    private void removeFloatingBubbles() {
+
+        ArrayList<Bubble> connectedToTop = new ArrayList<>();
+        ArrayList<Bubble> bubblesToCheck = new ArrayList<>();
+
+        for (Bubble bubble : _bubbles) {
+            if (bubble._coordY == 0) {
+                connectedToTop.add(bubble);
+                bubblesToCheck.add(bubble);
+            }
+        }
+
+        int index = 0;
+        while (index < bubblesToCheck.size()) {
+            Bubble current = bubblesToCheck.get(index++);
+
+            for (Direction dir : Direction.values()) {
+                Bubble neighbor = getNeighbour(current, dir);
+
+                if (neighbor != null && !connectedToTop.contains(neighbor)) {
+                    connectedToTop.add(neighbor);
+                    bubblesToCheck.add(neighbor);
+                }
+            }
+        }
+
+        _bubbles.removeIf(bubble -> !connectedToTop.contains(bubble));
+    }
     private void shootedBubblesUpdate() {
         for (int i = _shootedBubbles.size() - 1; i >= 0; i--) {
             ShootedBubble bubble = _shootedBubbles.get(i);
@@ -210,15 +241,12 @@ public class Game extends Layout {
                 Game._bubbles.add(b);
                 _animatedPositioningBubbles.remove(i);
 
-                // TO-DO - counting bubbles
                 int countSameBubbles = countBubbleGroup(bubble._bubble);
 
-                // TO-DO - remove bubbles
-                if(countSameBubbles > 2){
+                if(countSameBubbles > 2)
                     removeBubbleGroup(bubble._bubble);
-                }
 
-                //
+                removeFloatingBubbles();
             }
         }
     }

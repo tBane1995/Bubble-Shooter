@@ -52,6 +52,7 @@ public class Gun {
         }
 
         if(MyInput.processor.isTouchUp()){
+
             Bubble bubble = new Bubble(-1,-1, -1);
             //Game._bubbles.add(bubble);
             ShootedBubble mbubble = new ShootedBubble(bubble, getGunTipPosition(), _angleInDegrees);
