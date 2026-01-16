@@ -15,6 +15,7 @@
 ![Zrzut ekranu](screenshots/02.png)
 ![Zrzut ekranu](screenshots/03.png)
 ![Zrzut ekranu](screenshots/04.png)
+![Zrzut ekranu](screenshots/05.png)
 
 
 ## Instalacja

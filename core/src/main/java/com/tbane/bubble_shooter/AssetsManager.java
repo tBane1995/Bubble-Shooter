@@ -8,11 +8,8 @@ import com.badlogic.gdx.graphics.g3d.loader.ObjLoader;
 
 public class AssetsManager {
     public static final AssetManager manager = new AssetManager();
-    public static boolean success;
     static {
         manager.setLoader(Model.class, ".obj", new ObjLoader(new InternalFileHandleResolver()));
-
-        success = true;
 
         loadTexture("tex/mainBoard.png");
         loadTexture("tex/panel.png");
@@ -40,14 +37,8 @@ public class AssetsManager {
         loadTexture("tex/gameBoard.png");
         loadTexture("tex/bubble.png");
         loadTexture("tex/gun.png");
+        loadTexture("tex/laser.png");
         manager.finishLoading();
-
-        if(success){
-            System.out.println("success loaded all textures");
-        }else{
-            System.out.println("failed loaded all textures");
-            System.out.println("exit");
-        }
     }
 
     public static void loadTexture(String path) {

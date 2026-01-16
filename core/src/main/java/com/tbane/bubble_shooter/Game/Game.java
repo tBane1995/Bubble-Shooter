@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.Vector;
 
 public class Game extends Layout {
 
@@ -304,6 +305,8 @@ public class Game extends Layout {
         for(AnimatedPositioningBubble bubble : _animatedPositioningBubbles)
             bubble._bubble.drawColor();
 
+        _gun.drawColorOfAmmo();
+
         Renderer.shapeRenderer.end();
 
         // draw bubbles
@@ -316,6 +319,8 @@ public class Game extends Layout {
 
         for(AnimatedPositioningBubble bubble : _animatedPositioningBubbles)
             bubble._bubble.drawBubble();
+
+        _gun.drawBubbleOfAmmo();
 
         _gun.draw();
 
