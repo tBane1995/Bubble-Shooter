@@ -21,6 +21,8 @@ import java.util.Vector;
 public class Game extends Layout {
 
     private final Button _backBtn;
+    private int _bubblesLinesAtStart;
+    private int _bubblesInLine;
     public static ArrayList<Bubble> _bubbles;
     public static ArrayList<ShootedBubble> _shootedBubbles;
     public static ArrayList<AnimatedPositioningBubble> _animatedPositioningBubbles;
@@ -39,7 +41,10 @@ public class Game extends Layout {
 
         _backBtn.onclick_func = LayoutsManager::pop_back;
 
+
         createBubbles();
+        coloringBubbles();
+
         _shootedBubbles = new ArrayList<>();
         _animatedPositioningBubbles = new ArrayList<>();
 
@@ -51,15 +56,15 @@ public class Game extends Layout {
 
         Bubble._radius = 32;
 
-        int bubblesLines = 8;
-        int bubblesInLine = Renderer.VIRTUAL_WIDTH / ((int)Bubble._radius*2);
-        int marginLeft = (int) ((float)(Renderer.VIRTUAL_WIDTH - bubblesInLine*Bubble._radius*2)/2.0f);
+        _bubblesLinesAtStart = 8;
+        _bubblesInLine = Renderer.VIRTUAL_WIDTH / ((int)Bubble._radius*2);
+        int marginLeft = (int) ((float)(Renderer.VIRTUAL_WIDTH - _bubblesInLine*Bubble._radius*2)/2.0f);
 
         Bubble._marginLeft = marginLeft;
 
         _bubbles = new ArrayList<>();
-        for(int y=0;y<bubblesLines;y++){
-            for(int x=0;x<bubblesInLine-y%2;x++){
+        for(int y=0;y<_bubblesLinesAtStart;y++){
+            for(int x=0;x<_bubblesInLine-y%2;x++){
                 int color = (int)(Math.random()*6);
                 _bubbles.add(new Bubble(x, y, color));
             }
@@ -92,6 +97,57 @@ public class Game extends Layout {
         }
 
         return b;
+    }
+
+    private void coloringBubbles(Bubble bubble, int color, int iter) {
+
+        if (bubble == null)
+            return;
+
+        if (iter <= 0)
+            return;
+
+        if (bubble._color == color)
+            return;
+
+        bubble._color = color;
+
+        for (Direction dir : Direction.values()) {
+            if (Math.random() < 0.6f) {
+                coloringBubbles(
+                    getNeighbour(bubble, dir),
+                    color,
+                    iter - 1
+                );
+            }
+        }
+    }
+
+    private int generateColor(Bubble bubble) {
+        int color = -1;
+        boolean selectedColor = false;
+        while(!selectedColor){
+            color = (int)(Math.random()*6);
+            selectedColor = true;
+            for(Direction direction : Direction.values()){
+                Bubble ngbr = getNeighbour(bubble, direction);
+                if(ngbr != null && ngbr._color == color)
+                    selectedColor = false;
+            }
+        }
+
+        return color;
+    }
+
+    private void coloringBubbles(){
+        for(int i=0; i<64; i++){
+            int y = (int)(Math.random()*_bubblesLinesAtStart);
+            int x = (int)(Math.random()*_bubblesInLine);
+            Bubble bubble = getBubble(x,y);
+            int color = generateColor(bubble);
+            int iter = (int)(Math.random()*3)+1;
+            coloringBubbles(bubble, color, iter);
+        }
     }
 
     public int countBubbleGroup(Bubble start) {
