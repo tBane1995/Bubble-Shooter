@@ -124,21 +124,29 @@ public class Game extends Layout {
     }
 
     private int generateColor(Bubble bubble) {
-        int color = -1;
-        boolean selectedColor = false;
-        while(!selectedColor){
-            color = (int)(Math.random()*6);
-            selectedColor = true;
-            for(Direction direction : Direction.values()){
-                Bubble ngbr = getNeighbour(bubble, direction);
-                if(ngbr != null && ngbr._color == color)
-                    selectedColor = false;
+        ArrayList<Integer> neighborColors = new ArrayList<>();
+
+        for (Direction dir : Direction.values()) {
+            Bubble ngbr = getNeighbour(bubble, dir);
+            if (ngbr != null) {
+                neighborColors.add(ngbr._color);
             }
         }
 
-        return color;
-    }
+        ArrayList<Integer> possibleColors = new ArrayList<>();
+        for (int i = 0; i < 6; i++) {
+            if (!neighborColors.contains(i)) {
+                possibleColors.add(i);
+            }
+        }
 
+        if (possibleColors.isEmpty()) {
+            return (int)(Math.random() * 6);
+        }
+
+        int index = (int)(Math.random() * possibleColors.size());
+        return possibleColors.get(index);
+    }
     private void coloringBubbles(){
         for(int i=0; i<64; i++){
             int y = (int)(Math.random()*_bubblesLinesAtStart);
@@ -244,13 +252,18 @@ public class Game extends Layout {
             Vector2 position = bubble._bubble.getPositionWithVariation();
             boolean bubbleCollided = false;
 
-            for (Bubble staticBubble : _bubbles) {
-                float xx = position.x - staticBubble.getPositionWithVariation().x;
-                float yy = position.y - staticBubble.getPositionWithVariation().y;
+            if(position.y > Renderer.VIRTUAL_HEIGHT - 160 - Bubble._radius)
+                bubbleCollided = true;
 
-                if (xx * xx + yy * yy <= 4.0f * Bubble._radius * Bubble._radius) {
-                    bubbleCollided = true;
-                    break;
+            if(!bubbleCollided){
+                for (Bubble staticBubble : _bubbles) {
+                    float xx = position.x - staticBubble.getPositionWithVariation().x;
+                    float yy = position.y - staticBubble.getPositionWithVariation().y;
+
+                    if (xx * xx + yy * yy <= 4.0f * Bubble._radius * Bubble._radius) {
+                        bubbleCollided = true;
+                        break;
+                    }
                 }
             }
 
