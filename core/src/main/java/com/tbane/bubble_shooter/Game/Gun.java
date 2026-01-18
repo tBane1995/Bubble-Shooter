@@ -28,6 +28,7 @@ public class Gun {
         loadAmmo();
         loadAmmo();
         loadAmmo();
+
     }
 
     private void loadAmmo(){
@@ -38,16 +39,16 @@ public class Gun {
 
         for(int i=0;i<_ammo.size();i++){
             float x = Bubble._radius*2.0f*i;
-            _ammo.get(i).setPosition(new Vector2(_position.x + 128 + x,_position.y));
+            _ammo.get(i).setPosition(new Vector2(_position.x + 160 + x,_position.y));
 
         }
     }
     private Vector2 getGunTipPosition() {
-        float offset = 96-24; // od origin do końca lufy
+        float offset = 96-24;
         float rad = (float)Math.toRadians(_angleInDegrees);
         return new Vector2(
-            _position.x - offset * (float)Math.sin(rad),  // cos dla X
-            _position.y + offset * (float)Math.cos(rad)   // sin dla Y
+            _position.x - offset * (float)Math.sin(rad),
+            _position.y + offset * (float)Math.cos(rad)
         );
     }
 
@@ -184,7 +185,18 @@ public class Gun {
             ammo.drawBubble();
     }
 
-    public void draw(){
+    public void drawBackward(){
+        Texture gunBackwardTexture = AssetsManager.getTexture("tex/gunBackward.png");
+        if(gunBackwardTexture != null){
+            Sprite gunBackward = new Sprite(gunBackwardTexture);
+            gunBackward.setOrigin(127,127);
+            gunBackward.setRotation(_angleInDegrees-4);
+            gunBackward.setPosition(_position.x - gunBackward.getOriginX(), _position.y - gunBackward.getOriginY());
+            gunBackward.draw(Renderer.spriteBatch);
+        }
+    }
+
+    public void drawForward(){
 
         Texture laserPointTexture = AssetsManager.getTexture("tex/laser.png");
         if(laserPointTexture != null){
@@ -197,13 +209,13 @@ public class Gun {
             }
         }
 
-        Texture gunTexture = AssetsManager.getTexture("tex/gun.png");
-        if(gunTexture != null){
-            Sprite gun = new Sprite(gunTexture);
-            gun.setOrigin(24,24);
-            gun.setRotation(_angleInDegrees);
-            gun.setPosition(_position.x - gun.getOriginX(), _position.y - gun.getOriginY());
-            gun.draw(Renderer.spriteBatch);
+        Texture gunForwardTexture = AssetsManager.getTexture("tex/gunForward.png");
+        if(gunForwardTexture != null){
+            Sprite gunForward = new Sprite(gunForwardTexture);
+            gunForward.setOrigin(127,127);
+            gunForward.setRotation(_angleInDegrees-4);
+            gunForward.setPosition(_position.x - gunForward.getOriginX(), _position.y - gunForward.getOriginY());
+            gunForward.draw(Renderer.spriteBatch);
         }
 
 

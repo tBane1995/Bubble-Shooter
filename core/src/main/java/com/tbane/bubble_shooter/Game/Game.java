@@ -26,8 +26,11 @@ public class Game extends Layout {
     public static ArrayList<Bubble> _bubbles;
     public static ArrayList<ShootedBubble> _shootedBubbles;
     public static ArrayList<AnimatedPositioningBubble> _animatedPositioningBubbles;
+    // public static ArrayList<> _destroyingBubbles;
+    // public static ArrayList <> _fallingBubbles;
     private Gun _gun;
-    enum Direction { NE, E, SE, SW, W, NW }
+
+    enum Direction {NE, E, SE, SW, W, NW}
 
     public Game() {
         super();
@@ -57,43 +60,57 @@ public class Game extends Layout {
         Bubble._radius = 32;
 
         _bubblesLinesAtStart = 8;
-        _bubblesInLine = Renderer.VIRTUAL_WIDTH / ((int)Bubble._radius*2);
-        int marginLeft = (int) ((float)(Renderer.VIRTUAL_WIDTH - _bubblesInLine*Bubble._radius*2)/2.0f);
+        _bubblesInLine = Renderer.VIRTUAL_WIDTH / ((int) Bubble._radius * 2);
+        int marginLeft = (int) ((float) (Renderer.VIRTUAL_WIDTH - _bubblesInLine * Bubble._radius * 2) / 2.0f);
 
         Bubble._marginLeft = marginLeft;
 
         _bubbles = new ArrayList<>();
-        for(int y=0;y<_bubblesLinesAtStart;y++){
-            for(int x=0;x<_bubblesInLine-y%2;x++){
-                int color = (int)(Math.random()*6);
+        for (int y = 0; y < _bubblesLinesAtStart; y++) {
+            for (int x = 0; x < _bubblesInLine - y % 2; x++) {
+                int color = (int) (Math.random() * 6);
                 _bubbles.add(new Bubble(x, y, color));
             }
         }
     }
 
     private Bubble getBubble(int x, int y) {
-        for(Bubble bubble : _bubbles){
-            if(bubble.hasCoords(x,y))
+        for (Bubble bubble : _bubbles) {
+            if (bubble.hasCoords(x, y))
                 return bubble;
         }
         return null;
     }
 
-    private Bubble getNeighbour(Bubble bubble, Direction direction){
+    private Bubble getNeighbour(Bubble bubble, Direction direction) {
 
-        if(bubble == null)
+        if (bubble == null)
             return null;
 
         Bubble b = null;
-        switch(direction){
-            case NE: b = getBubble(bubble._coordX+bubble._coordY%2, bubble._coordY-1); break;
-            case E: b = getBubble(bubble._coordX+1, bubble._coordY); break;
-            case SE: b = getBubble(bubble._coordX+bubble._coordY%2, bubble._coordY+1); break;
-            case SW: b = getBubble(bubble._coordX-1+bubble._coordY%2, bubble._coordY+1); break;
-            case W: b = getBubble(bubble._coordX-1, bubble._coordY); break;
-            case NW: b = getBubble(bubble._coordX-1+ bubble._coordY%2, bubble._coordY-1); break;
+        switch (direction) {
+            case NE:
+                b = getBubble(bubble._coordX + bubble._coordY % 2, bubble._coordY - 1);
+                break;
+            case E:
+                b = getBubble(bubble._coordX + 1, bubble._coordY);
+                break;
+            case SE:
+                b = getBubble(bubble._coordX + bubble._coordY % 2, bubble._coordY + 1);
+                break;
+            case SW:
+                b = getBubble(bubble._coordX - 1 + bubble._coordY % 2, bubble._coordY + 1);
+                break;
+            case W:
+                b = getBubble(bubble._coordX - 1, bubble._coordY);
+                break;
+            case NW:
+                b = getBubble(bubble._coordX - 1 + bubble._coordY % 2, bubble._coordY - 1);
+                break;
             // default is NW
-            default : b = getBubble(bubble._coordX+bubble._coordY%2, bubble._coordY-1); break;
+            default:
+                b = getBubble(bubble._coordX + bubble._coordY % 2, bubble._coordY - 1);
+                break;
         }
 
         return b;
@@ -110,7 +127,7 @@ public class Game extends Layout {
         if (bubble._color == color)
             return;
 
-        bubble._color = color;
+        bubble.setColor(color);
 
         for (Direction dir : Direction.values()) {
             if (Math.random() < 0.6f) {
@@ -141,19 +158,20 @@ public class Game extends Layout {
         }
 
         if (possibleColors.isEmpty()) {
-            return (int)(Math.random() * 6);
+            return (int) (Math.random() * 6);
         }
 
-        int index = (int)(Math.random() * possibleColors.size());
+        int index = (int) (Math.random() * possibleColors.size());
         return possibleColors.get(index);
     }
-    private void coloringBubbles(){
-        for(int i=0; i<64; i++){
-            int y = (int)(Math.random()*_bubblesLinesAtStart);
-            int x = (int)(Math.random()*_bubblesInLine);
-            Bubble bubble = getBubble(x,y);
+
+    private void coloringBubbles() {
+        for (int i = 0; i < 64; i++) {
+            int y = (int) (Math.random() * _bubblesLinesAtStart);
+            int x = (int) (Math.random() * _bubblesInLine);
+            Bubble bubble = getBubble(x, y);
             int color = generateColor(bubble);
-            int iter = (int)(Math.random()*3)+1;
+            int iter = (int) (Math.random() * 3) + 1;
             coloringBubbles(bubble, color, iter);
         }
     }
@@ -212,7 +230,7 @@ public class Game extends Layout {
             }
         }
 
-        for(Bubble bubble : visited){
+        for (Bubble bubble : visited) {
             _bubbles.remove(bubble);
         }
 
@@ -246,16 +264,17 @@ public class Game extends Layout {
 
         _bubbles.removeIf(bubble -> !connectedToTop.contains(bubble));
     }
+
     private void shootedBubblesUpdate() {
         for (int i = _shootedBubbles.size() - 1; i >= 0; i--) {
             ShootedBubble bubble = _shootedBubbles.get(i);
             Vector2 position = bubble._bubble.getPositionWithVariation();
             boolean bubbleCollided = false;
 
-            if(position.y > Renderer.VIRTUAL_HEIGHT - 160 - Bubble._radius)
+            if (position.y > Renderer.VIRTUAL_HEIGHT - 160 - Bubble._radius)
                 bubbleCollided = true;
 
-            if(!bubbleCollided){
+            if (!bubbleCollided) {
                 for (Bubble staticBubble : _bubbles) {
                     float xx = position.x - staticBubble.getPositionWithVariation().x;
                     float yy = position.y - staticBubble.getPositionWithVariation().y;
@@ -286,7 +305,7 @@ public class Game extends Layout {
                 _animatedPositioningBubbles.add(
                     new AnimatedPositioningBubble(b,
                         b.getPosition(),
-                        Bubble.calcPositionFromCoords((int)coords.x, (int)coords.y)
+                        Bubble.calcPositionFromCoords((int) coords.x, (int) coords.y)
                     ));
                 _shootedBubbles.remove(i);
             } else {
@@ -313,7 +332,7 @@ public class Game extends Layout {
 
                 int countSameBubbles = countBubbleGroup(bubble._bubble);
 
-                if(countSameBubbles > 2)
+                if (countSameBubbles > 2)
                     removeBubbleGroup(bubble._bubble);
 
                 removeFloatingBubbles();
@@ -346,20 +365,22 @@ public class Game extends Layout {
     public void draw() {
 
         Texture backgroundTexture = AssetsManager.getTexture("tex/gameBoard.png");
-        if(backgroundTexture!=null){
+        if (backgroundTexture != null) {
             Sprite background = new Sprite(backgroundTexture);
-            background.setPosition(0,0 );
+            background.setPosition(0, 0);
             background.draw(Renderer.spriteBatch);
         }
 
         Texture topPanelTexture = AssetsManager.getTexture("tex/topPanel.png");
-        if(topPanelTexture != null){
+        if (topPanelTexture != null) {
             Sprite topPanel = new Sprite(topPanelTexture);
-            topPanel.setPosition(0,Renderer.VIRTUAL_HEIGHT - topPanel.getHeight() );
+            topPanel.setPosition(0, Renderer.VIRTUAL_HEIGHT - topPanel.getHeight());
             topPanel.draw(Renderer.spriteBatch);
         }
 
         _backBtn.draw();
+
+        _gun.drawBackward();
 
         // draw colors of bubbles
         Renderer.end2D();
@@ -367,11 +388,11 @@ public class Game extends Layout {
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         Renderer.shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
-        for(Bubble bubble : _bubbles)
+        for (Bubble bubble : _bubbles)
             bubble.drawColor();
-        for(ShootedBubble bubble : _shootedBubbles)
+        for (ShootedBubble bubble : _shootedBubbles)
             bubble._bubble.drawColor();
-        for(AnimatedPositioningBubble bubble : _animatedPositioningBubbles)
+        for (AnimatedPositioningBubble bubble : _animatedPositioningBubbles)
             bubble._bubble.drawColor();
 
         _gun.drawColorOfAmmo();
@@ -380,22 +401,23 @@ public class Game extends Layout {
 
         // draw bubbles
         Renderer.begin2D();
-        for(Bubble bubble : _bubbles)
+
+        for (Bubble bubble : _bubbles)
             bubble.drawBubble();
 
-        for(ShootedBubble bubble : _shootedBubbles)
+        for (ShootedBubble bubble : _shootedBubbles)
             bubble._bubble.drawBubble();
 
-        for(AnimatedPositioningBubble bubble : _animatedPositioningBubbles)
+        for (AnimatedPositioningBubble bubble : _animatedPositioningBubbles)
             bubble._bubble.drawBubble();
 
         _gun.drawBubbleOfAmmo();
 
-        _gun.draw();
+        _gun.drawForward();
 
         // ads panel
         Texture bottomPanelTexture = AssetsManager.getTexture("tex/bottomPanel.png");
-        if(bottomPanelTexture!=null){
+        if (bottomPanelTexture != null) {
             Sprite adsPanel = new Sprite(bottomPanelTexture);
             adsPanel.setPosition(0, 0);
             adsPanel.draw(Renderer.spriteBatch);

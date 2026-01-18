@@ -34,15 +34,16 @@ public class Bubble {
     public Vector3 getColor(){
         Vector3 color;
 
-        float c = 0.75f;
+        float c = 0.65f;    // first color value (main)
+        float a = 0.15f;    // second color value (background)
 
         switch (_color){
-            case 0: color = new Vector3(c,0,0); break;
-            case 1: color = new Vector3(0,c,0); break;
-            case 2: color = new Vector3(0,0,c); break;
-            case 3: color = new Vector3(c,c,0); break;
-            case 4: color = new Vector3(0,c,c); break;
-            case 5: color = new Vector3(c,0,c); break;
+            case 0: color = new Vector3(c,a,a); break;
+            case 1: color = new Vector3(a,c,a); break;
+            case 2: color = new Vector3(a,a,c); break;
+            case 3: color = new Vector3(c,c,a); break;
+            case 4: color = new Vector3(a,c,c); break;
+            case 5: color = new Vector3(c,a,c); break;
             default: color = new Vector3(0,0,0); break;
         }
 
@@ -57,6 +58,10 @@ public class Bubble {
         _coordX = (int)coords.x;
         _coordY = (int)coords.y;
     }
+    public void setColor(int color){
+        _color = color;
+    }
+
     public boolean hasCoords(int x, int y){
         return x == _coordX && y == _coordY;
     }
@@ -119,10 +124,10 @@ public class Bubble {
         float radius = _radius - 5;
         Vector2 positionWithVariation = getPositionWithVariation();
 
-        Renderer.shapeRenderer.setColor(r, g, b, 0.75f);
+        Renderer.shapeRenderer.setColor(r, g, b, 1.f);
         Renderer.shapeRenderer.circle(positionWithVariation.x, positionWithVariation.y, radius);
 
-        Renderer.shapeRenderer.setColor(r+0.25f, g+0.25f, b+0.25f, 0.75f);
+        Renderer.shapeRenderer.setColor(r+0.25f, g+0.25f, b+0.25f, 1.f);
         Renderer.shapeRenderer.circle(positionWithVariation.x - radius*4.0f/11.0f, positionWithVariation.y+radius*4.0f/11.0f, radius/4);
 
     }

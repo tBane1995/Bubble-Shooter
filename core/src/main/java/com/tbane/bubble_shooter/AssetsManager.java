@@ -36,8 +36,10 @@ public class AssetsManager {
 
         loadTexture("tex/gameBoard.png");
         loadTexture("tex/bubble.png");
-        loadTexture("tex/gun.png");
+        loadTexture("tex/gunForward.png");
+        loadTexture("tex/gunBackward.png");
         loadTexture("tex/laser.png");
+
         manager.finishLoading();
     }
 
