@@ -19,7 +19,7 @@ public class Bubble {
     int _color;
     float _timer;
 
-    Vector2 positionWithVariation;
+    Vector2 _positionWithVariation;
 
     public Bubble(int x, int y, int color){
         _coordX = x;
@@ -29,6 +29,8 @@ public class Bubble {
         setPositionFromCoords(_coordX, _coordY);
 
         _timer = (float)(Math.random() * 6);
+
+        _positionWithVariation = new Vector2(_position);
     }
 
     public Vector3 getColor(){
@@ -96,7 +98,7 @@ public class Bubble {
 
     public void setPosition(Vector2 newPosition){
         _position = newPosition;
-        positionWithVariation = _position;
+        _positionWithVariation = _position;
     }
 
     public Vector2 getPosition() {
@@ -108,13 +110,15 @@ public class Bubble {
         return position;
     }
     public Vector2 getPositionWithVariation() {
+        return _positionWithVariation;
+    }
+
+    public void calcPositionWithVariation() {
         Vector2 positionWithVariation = new Vector2(_position);
         float speed = 3.0f;
         positionWithVariation.x += (float)Math.sin(speed*Time.currentTime-_timer) * 3.0f;
         positionWithVariation.y += (float)Math.cos(speed*Time.currentTime-_timer) * 3.0f;
-        return positionWithVariation;
     }
-
     public void drawColor() {
         Vector3 color = getColor();
         float r = color.x;

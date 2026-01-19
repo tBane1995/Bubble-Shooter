@@ -358,6 +358,9 @@ public class Game extends Layout {
         shootedBubblesUpdate();
         animatedPositioningBubblesUpdate();
 
+        for(Bubble buble : _bubbles){
+            buble.calcPositionWithVariation();
+        }
 
     }
 
@@ -414,6 +417,16 @@ public class Game extends Layout {
         _gun.drawBubbleOfAmmo();
 
         _gun.drawForward();
+
+        Renderer.end2D();
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+        Renderer.shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        _gun.drawColorOfBubbleOnGun();
+        Renderer.shapeRenderer.end();
+
+        Renderer.begin2D();
+        _gun.drawBubbleOfBubbleOnGun();
 
         // ads panel
         Texture bottomPanelTexture = AssetsManager.getTexture("tex/bottomPanel.png");

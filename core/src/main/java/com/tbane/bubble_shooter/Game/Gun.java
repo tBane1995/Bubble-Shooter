@@ -28,8 +28,11 @@ public class Gun {
         loadAmmo();
         loadAmmo();
         loadAmmo();
+        loadAmmo();
+
 
     }
+
 
     private void loadAmmo(){
 
@@ -38,8 +41,13 @@ public class Gun {
 
 
         for(int i=0;i<_ammo.size();i++){
-            float x = Bubble._radius*2.0f*i;
-            _ammo.get(i).setPosition(new Vector2(_position.x + 160 + x,_position.y));
+
+            if(i == 0){
+                _ammo.get(i).setPosition(_position);
+            }else{
+                float x = Bubble._radius*2.0f*i;
+                _ammo.get(i).setPosition(new Vector2(_position.x + 112 + x,_position.y));
+            }
 
         }
     }
@@ -176,20 +184,28 @@ public class Gun {
     }
 
     public void drawColorOfAmmo(){
-        for(Bubble ammo : _ammo)
-            ammo.drawColor();
+        for(int i=1; i<_ammo.size();i++)
+            _ammo.get(i).drawColor();
+    }
+
+    public void drawColorOfBubbleOnGun() {
+        _ammo.get(0).drawColor();
     }
 
     public void drawBubbleOfAmmo() {
-        for(Bubble ammo : _ammo)
-            ammo.drawBubble();
+        for(int i=1; i<_ammo.size();i++)
+            _ammo.get(i).drawBubble();
+    }
+
+    public void drawBubbleOfBubbleOnGun() {
+        _ammo.get(0).drawBubble();
     }
 
     public void drawBackward(){
         Texture gunBackwardTexture = AssetsManager.getTexture("tex/gunBackward.png");
         if(gunBackwardTexture != null){
             Sprite gunBackward = new Sprite(gunBackwardTexture);
-            gunBackward.setOrigin(127,127);
+            gunBackward.setOrigin(120,127);
             gunBackward.setRotation(_angleInDegrees-4);
             gunBackward.setPosition(_position.x - gunBackward.getOriginX(), _position.y - gunBackward.getOriginY());
             gunBackward.draw(Renderer.spriteBatch);
@@ -212,7 +228,7 @@ public class Gun {
         Texture gunForwardTexture = AssetsManager.getTexture("tex/gunForward.png");
         if(gunForwardTexture != null){
             Sprite gunForward = new Sprite(gunForwardTexture);
-            gunForward.setOrigin(127,127);
+            gunForward.setOrigin(122,127);
             gunForward.setRotation(_angleInDegrees-4);
             gunForward.setPosition(_position.x - gunForward.getOriginX(), _position.y - gunForward.getOriginY());
             gunForward.draw(Renderer.spriteBatch);
