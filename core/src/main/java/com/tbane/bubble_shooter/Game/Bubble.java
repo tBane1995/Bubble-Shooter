@@ -96,6 +96,10 @@ public class Bubble {
         _position = calcPositionFromCoords(coordX, coordY);
     }
 
+    public void setPositionFromCoords(Vector2 coords){
+        _position = calcPositionFromCoords((int)coords.x, (int)coords.y);
+    }
+
     public void setPosition(Vector2 newPosition){
         _position = newPosition;
         _positionWithVariation = _position;
@@ -114,10 +118,10 @@ public class Bubble {
     }
 
     public void calcPositionWithVariation() {
-        Vector2 positionWithVariation = new Vector2(_position);
+        _positionWithVariation = new Vector2(_position);
         float speed = 3.0f;
-        positionWithVariation.x += (float)Math.sin(speed*Time.currentTime-_timer) * 3.0f;
-        positionWithVariation.y += (float)Math.cos(speed*Time.currentTime-_timer) * 3.0f;
+        _positionWithVariation.x += (float)Math.sin(speed*Time.currentTime-_timer) * 3.0f;
+        _positionWithVariation.y += (float)Math.cos(speed*Time.currentTime-_timer) * 3.0f;
     }
     public void drawColor() {
         Vector3 color = getColor();

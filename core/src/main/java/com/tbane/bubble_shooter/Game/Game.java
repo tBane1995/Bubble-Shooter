@@ -6,9 +6,11 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.tbane.bubble_shooter.AssetsManager;
 import com.tbane.bubble_shooter.GUI.Button;
 import com.tbane.bubble_shooter.Renderer;
+import com.tbane.bubble_shooter.Time;
 import com.tbane.bubble_shooter.Views.Layout;
 import com.tbane.bubble_shooter.Views.LayoutsManager;
 
@@ -28,7 +30,10 @@ public class Game extends Layout {
     public static ArrayList<AnimatedPositioningBubble> _animatedPositioningBubbles;
     // public static ArrayList<> _destroyingBubbles;
     // public static ArrayList <> _fallingBubbles;
+    private float _lastMoveDownBubblesTime;
+    private float _moveDownBubblesDuration;
     private Gun _gun;
+
 
     enum Direction {NE, E, SE, SW, W, NW}
 
@@ -51,6 +56,9 @@ public class Game extends Layout {
         _shootedBubbles = new ArrayList<>();
         _animatedPositioningBubbles = new ArrayList<>();
 
+        _lastMoveDownBubblesTime = Time.currentTime;
+        _moveDownBubblesDuration = 20;
+
         _gun = new Gun();
     }
 
@@ -61,13 +69,14 @@ public class Game extends Layout {
 
         _bubblesLinesAtStart = 8;
         _bubblesInLine = Renderer.VIRTUAL_WIDTH / ((int) Bubble._radius * 2);
-        int marginLeft = (int) ((float) (Renderer.VIRTUAL_WIDTH - _bubblesInLine * Bubble._radius * 2) / 2.0f);
+        _bubblesInLine -= 1;
+        int marginLeft = (int) ((float) (Renderer.VIRTUAL_WIDTH - _bubblesInLine * Bubble._radius * 2)/4);
 
         Bubble._marginLeft = marginLeft;
 
         _bubbles = new ArrayList<>();
         for (int y = 0; y < _bubblesLinesAtStart; y++) {
-            for (int x = 0; x < _bubblesInLine - y % 2; x++) {
+            for (int x = 0; x < _bubblesInLine; x++) {
                 int color = (int) (Math.random() * 6);
                 _bubbles.add(new Bubble(x, y, color));
             }
@@ -265,6 +274,37 @@ public class Game extends Layout {
         _bubbles.removeIf(bubble -> !connectedToTop.contains(bubble));
     }
 
+    private void generateNewBubblesOnFirstLine() {
+        for (int x = 0; x < _bubblesInLine; x++) {
+
+            int color = (int) (Math.random() * 6);
+            Bubble bubble = new Bubble(x, 0, color);
+            _bubbles.add(bubble);
+
+            if(Math.random() < 0.3f) {
+                ArrayList<Integer> ngbrsColor = new ArrayList<>();
+                Bubble ngbrSW = getNeighbour(bubble, Direction.SW);
+                Bubble ngbrSE = getNeighbour(bubble, Direction.SE);
+
+                if(ngbrSW != null)
+                    ngbrsColor.add(ngbrSW._color);
+                if(ngbrSE != null)
+                    ngbrsColor.add(ngbrSE._color);
+
+                if(ngbrsColor.size() > 0)
+                    bubble.setColor(ngbrsColor.get((int)(Math.random()*(ngbrsColor.size()))));
+            }
+
+        }
+    }
+    private void moveBubblesDown() {
+        for(int i=_bubbles.size()-1;i>=0; i--){
+            Vector2 coords = new Vector2(_bubbles.get(i)._coordX, _bubbles.get(i)._coordY+1);
+            _bubbles.get(i).setCoords(coords);
+            _bubbles.get(i).setPositionFromCoords(coords);
+        }
+    }
+
     private void shootedBubblesUpdate() {
         for (int i = _shootedBubbles.size() - 1; i >= 0; i--) {
             ShootedBubble bubble = _shootedBubbles.get(i);
@@ -358,6 +398,17 @@ public class Game extends Layout {
         shootedBubblesUpdate();
         animatedPositioningBubblesUpdate();
 
+        if(Time.currentTime - _lastMoveDownBubblesTime > _moveDownBubblesDuration){
+            _lastMoveDownBubblesTime = Time.currentTime;
+            _moveDownBubblesDuration -= 0.5f;
+
+            if(_moveDownBubblesDuration < 5)
+                _moveDownBubblesDuration = 5;
+
+            moveBubblesDown();
+            generateNewBubblesOnFirstLine();
+        }
+
         for(Bubble buble : _bubbles){
             buble.calcPositionWithVariation();
         }
@@ -427,6 +478,9 @@ public class Game extends Layout {
 
         Renderer.begin2D();
         _gun.drawBubbleOfBubbleOnGun();
+
+        // text Fall in
+
 
         // ads panel
         Texture bottomPanelTexture = AssetsManager.getTexture("tex/bottomPanel.png");

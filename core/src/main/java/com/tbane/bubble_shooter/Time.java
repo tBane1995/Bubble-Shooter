@@ -38,4 +38,7 @@ public class Time {
 
         return text;
     }
+    public static float easeOut(float t) {
+        return 1.0f - (float) Math.pow(1 - t, 3);
+    }
 }
