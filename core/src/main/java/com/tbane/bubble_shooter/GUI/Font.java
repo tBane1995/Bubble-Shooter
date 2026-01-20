@@ -10,6 +10,7 @@ public class Font {
     public static BitmapFont titleFont, buttonFont;
     public static BitmapFont descriptionFont;
     public static BitmapFont rankingHighscoreFont, rankingTitleFont, rankingFont;
+    public static BitmapFont gameTopTextBigFont, gameTopTextSmallFont;
     static {
 
         buttonFont = generateFont("fonts/ScienceGothic.ttf", 40);
@@ -20,6 +21,9 @@ public class Font {
         rankingHighscoreFont = generateFont("fonts/ScienceGothic.ttf", 48);
         rankingTitleFont = generateFont("fonts/ScienceGothic.ttf", 32);
         rankingFont = generateFont("fonts/ScienceGothic.ttf", 24);
+
+        gameTopTextBigFont = generateFont("fonts/ScienceGothic.ttf", 48);
+        gameTopTextSmallFont = generateFont("fonts/ScienceGothic.ttf", 32);
 
     }
 

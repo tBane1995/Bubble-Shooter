@@ -3,12 +3,14 @@ package com.tbane.bubble_shooter.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.tbane.bubble_shooter.AssetsManager;
 import com.tbane.bubble_shooter.GUI.Button;
+import com.tbane.bubble_shooter.GUI.Font;
 import com.tbane.bubble_shooter.Renderer;
 import com.tbane.bubble_shooter.Time;
 import com.tbane.bubble_shooter.Views.Layout;
@@ -33,6 +35,9 @@ public class Game extends Layout {
     private float _lastMoveDownBubblesTime;
     private float _moveDownBubblesDuration;
     private Gun _gun;
+    private float _gameStartTime;
+    private float _gameTime;
+    private int _points;
 
 
     enum Direction {NE, E, SE, SW, W, NW}
@@ -60,6 +65,10 @@ public class Game extends Layout {
         _moveDownBubblesDuration = 20;
 
         _gun = new Gun();
+
+        _gameStartTime = Time.currentTime;
+        _gameTime = 0;
+        _points = 0;
     }
 
     public void createBubbles() {
@@ -413,6 +422,8 @@ public class Game extends Layout {
             buble.calcPositionWithVariation();
         }
 
+        _gameTime = Time.currentTime - _gameStartTime;
+
     }
 
     @Override
@@ -434,13 +445,33 @@ public class Game extends Layout {
 
         _backBtn.draw();
 
+        // Top Texts
+        GlyphLayout layout = new GlyphLayout();
+        float x = 256;
+        float y = Renderer.VIRTUAL_HEIGHT - 36;
+        float dx = 256;
+
+        layout.setText(Font.gameTopTextBigFont, "Time");
+        float timeTopTextWidth1 = layout.width;
+        Font.gameTopTextBigFont.draw(Renderer.spriteBatch, "Time", x-timeTopTextWidth1/2, y);
+
+        String timeText = Time.generateTimeString(_gameTime);
+        layout.setText(Font.gameTopTextSmallFont, timeText);
+        float timeBottomTextWidth1 = layout.width;
+        Font.gameTopTextSmallFont.draw(Renderer.spriteBatch, timeText, x-timeBottomTextWidth1/2, y-64);
+
+        layout.setText(Font.gameTopTextBigFont, "Points");
+        float timeTopTextWidth2 = layout.width;
+        Font.gameTopTextBigFont.draw(Renderer.spriteBatch, "Points", x+dx-timeTopTextWidth2/2, y);
+
+        layout.setText(Font.gameTopTextSmallFont, Integer.toString(_points));
+        float timeBottomTextWidth2 = layout.width;
+        Font.gameTopTextSmallFont.draw(Renderer.spriteBatch, Integer.toString(_points), x+dx-timeBottomTextWidth2/2, y-64);
+
         _gun.drawBackward();
 
-        // draw colors of bubbles
         Renderer.end2D();
-        Gdx.gl.glEnable(GL20.GL_BLEND);
-        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-        Renderer.shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        Renderer.beginShapeRenderer();
 
         for (Bubble bubble : _bubbles)
             bubble.drawColor();
@@ -448,39 +479,29 @@ public class Game extends Layout {
             bubble._bubble.drawColor();
         for (AnimatedPositioningBubble bubble : _animatedPositioningBubbles)
             bubble._bubble.drawColor();
-
         _gun.drawColorOfAmmo();
 
-        Renderer.shapeRenderer.end();
-
-        // draw bubbles
+        Renderer.endShapeRenderer();
         Renderer.begin2D();
 
         for (Bubble bubble : _bubbles)
             bubble.drawBubble();
-
         for (ShootedBubble bubble : _shootedBubbles)
             bubble._bubble.drawBubble();
-
         for (AnimatedPositioningBubble bubble : _animatedPositioningBubbles)
             bubble._bubble.drawBubble();
-
         _gun.drawBubbleOfAmmo();
-
         _gun.drawForward();
 
         Renderer.end2D();
-        Gdx.gl.glEnable(GL20.GL_BLEND);
-        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-        Renderer.shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        Renderer.beginShapeRenderer();
+
         _gun.drawColorOfBubbleOnGun();
-        Renderer.shapeRenderer.end();
 
+        Renderer.endShapeRenderer();
         Renderer.begin2D();
+
         _gun.drawBubbleOfBubbleOnGun();
-
-        // text Fall in
-
 
         // ads panel
         Texture bottomPanelTexture = AssetsManager.getTexture("tex/bottomPanel.png");
