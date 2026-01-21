@@ -350,7 +350,8 @@ public class Game extends Layout {
             if (bubbleCollided) {
                 Bubble b = bubble._bubble;
                 Vector2 coords = Bubble.calculateCoordsFromPosition(b.getPosition());
-
+                if(coords.x < 0) coords.x = 0;
+                if(coords.x >= _bubblesInLine) coords.x = _bubblesInLine-1;
                 b.setCoords(coords);
                 _animatedPositioningBubbles.add(
                     new AnimatedPositioningBubble(b,
