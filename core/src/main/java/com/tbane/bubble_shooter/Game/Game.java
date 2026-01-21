@@ -350,6 +350,7 @@ public class Game extends Layout {
             if (bubbleCollided) {
                 Bubble b = bubble._bubble;
                 Vector2 coords = Bubble.calculateCoordsFromPosition(b.getPosition());
+
                 b.setCoords(coords);
                 _animatedPositioningBubbles.add(
                     new AnimatedPositioningBubble(b,
@@ -407,15 +408,17 @@ public class Game extends Layout {
         shootedBubblesUpdate();
         animatedPositioningBubblesUpdate();
 
-        if(Time.currentTime - _lastMoveDownBubblesTime > _moveDownBubblesDuration){
-            _lastMoveDownBubblesTime = Time.currentTime;
-            _moveDownBubblesDuration -= 0.5f;
+        if(_animatedPositioningBubbles.isEmpty() && _shootedBubbles.isEmpty()){
+            if(Time.currentTime - _lastMoveDownBubblesTime > _moveDownBubblesDuration){
+                _lastMoveDownBubblesTime = Time.currentTime;
+                _moveDownBubblesDuration -= 0.5f;
 
-            if(_moveDownBubblesDuration < 5)
-                _moveDownBubblesDuration = 5;
+                if(_moveDownBubblesDuration < 5)
+                    _moveDownBubblesDuration = 5;
 
-            moveBubblesDown();
-            generateNewBubblesOnFirstLine();
+                moveBubblesDown();
+                generateNewBubblesOnFirstLine();
+            }
         }
 
         for(Bubble buble : _bubbles){
